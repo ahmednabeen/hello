@@ -84,6 +84,23 @@
     </div>
   </section>
 
+  <!-- About Section - Full Width -->
+  <section class="pt-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="bg-white rounded-2xl p-8 border border-slate-200 shadow-sm">
+        <h2 class="font-display font-bold text-2xl text-slate-800 mb-4 flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-accent to-cyan-600 flex items-center justify-center text-white">
+            <i class="fas fa-user"></i>
+          </div>
+          About {{ doctor.name }}
+        </h2>
+        <div class="text-slate-600 leading-relaxed">
+          {% if doctor.about %}{{ doctor.about|safe }}{% else %}No biography available.{% endif %}
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Main Content -->
   <section class="py-12">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -92,19 +109,6 @@
         <!-- Left Column - Main Content -->
         <div class="lg:col-span-2 space-y-8">
           
-          <!-- About Section -->
-          <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
-            <h2 class="font-display font-bold text-2xl text-slate-800 mb-4 flex items-center gap-3">
-              <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-accent to-cyan-600 flex items-center justify-center text-white">
-                <i class="fas fa-user"></i>
-              </div>
-              About {{ doctor.name }}
-            </h2>
-            <p class="text-slate-600 leading-relaxed">
-              {% if doctor.about %}{{ doctor.about|safe }}{% else %}No biography available.{% endif %}
-            </p>
-          </div>
-
           <!-- Education & Qualifications -->
           <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm">
             <h2 class="font-display font-bold text-2xl text-slate-800 mb-4 flex items-center gap-3">

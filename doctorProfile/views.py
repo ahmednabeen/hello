@@ -21,6 +21,7 @@ from .filters import (
     SpecialtyFilter, LocationFilter, ExperienceFilter, ReviewFilter,
 )
 from django.views.generic import TemplateView, DetailView
+from .form import DoctorRegistrationForm, HospitalRegistrationForm
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django.http import JsonResponse
@@ -452,6 +453,58 @@ class AboutUsView(TemplateView):
 class ContactView(TemplateView):
     template_name = 'profiles/contact.html'
     
+
+def register_view(request):
+    form_type = request.GET.get('type', 'doctor')
+    doctor_form = DoctorRegistrationForm()
+    hospital_form = HospitalRegistrationForm()
+
+    if request.method == 'POST':
+        form_type = request.POST.get('form_type', 'doctor')
+        if form_type == 'doctor':
+            doctor_form = DoctorRegistrationForm(request.POST, request.FILES)
+            if doctor_form.is_valid():
+                doctor = doctor_form.save(commit=False)
+                from .models import Location, Hospital as HospitalModel, Specialty
+                location_name = doctor_form.cleaned_data.get('location_text', '')
+                if location_name:
+                    location, _ = Location.objects.get_or_create(name=location_name.strip())
+                    doctor.location = location
+                hospital_name = doctor_form.cleaned_data.get('hospital_text', '')
+                if hospital_name:
+                    hospital, _ = HospitalModel.objects.get_or_create(name=hospital_name.strip())
+                    doctor.hospital = hospital
+                doctor.save()
+                specialties_text = doctor_form.cleaned_data.get('specialties_text', '')
+                if specialties_text:
+                    names = [s.strip() for s in specialties_text.split(',') if s.strip()]
+                    for name in names:
+                        specialty, _ = Specialty.objects.get_or_create(name=name)
+                        doctor.specialties.add(specialty)
+                return redirect('register_thanks')
+        else:
+            hospital_form = HospitalRegistrationForm(request.POST, request.FILES)
+            if hospital_form.is_valid():
+                hospital = hospital_form.save(commit=False)
+                from .models import Location
+                location_name = hospital_form.cleaned_data.get('location_text', '')
+                if location_name:
+                    location, _ = Location.objects.get_or_create(name=location_name.strip())
+                    hospital.location = location
+                hospital.save()
+                return redirect('register_thanks')
+
+    context = {
+        'doctor_form': doctor_form,
+        'hospital_form': hospital_form,
+        'form_type': form_type,
+    }
+    return render(request, 'profiles/register.html', context)
+
+
+def register_thanks_view(request):
+    return render(request, 'profiles/register_thanks.html')
+
 
 @method_decorator(cache_page(60 * 60 * 12), name='dispatch')  # cache for 12 hours
 class VerificationPolicyView(TemplateView):

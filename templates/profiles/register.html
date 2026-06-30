@@ -1,0 +1,107 @@
+{% extends 'base_new.html' %}
+{% load static %}
+
+{% block seo_head %}
+<title>Register Your Practice - BdDoc24</title>
+<meta name="robots" content="noindex, follow" />
+<meta name="description" content="Register your medical practice or hospital on BdDoc24 and reach more patients across Bangladesh." />
+{% endblock seo_head %}
+
+{% block content %}
+<main class="font-body min-h-screen bg-gradient-to-br from-slate-50 to-white pt-28 pb-20">
+  <div class="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="text-center mb-10 mt-10">
+      <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-accent to-cyan-600 flex items-center justify-center shadow-lg shadow-accent/30">
+        <i class="fas fa-user-md text-2xl text-white"></i>
+      </div>
+      <h1 class="font-display font-bold text-3xl sm:text-4xl text-slate-900 mb-3">List Your Practice</h1>
+      <p class="text-slate-600 text-lg max-w-xl mx-auto">Join {{ doctors_count|default:"1000+" }} verified healthcare professionals on BdDoc24 and reach patients across Bangladesh.</p>
+    </div>
+
+    <!-- Tab Toggle -->
+    <div class="flex bg-slate-100 rounded-2xl p-1.5 mb-8 max-w-md mx-auto">
+      <a href="{% url 'register' %}?type=doctor" class="flex-1 py-3 px-4 rounded-xl font-semibold text-sm text-center transition-all {% if form_type == 'doctor' %}bg-white text-slate-900 shadow-sm{% else %}text-slate-500 hover:text-slate-700{% endif %}">
+        <i class="fas fa-user-md mr-2"></i>Register as Doctor
+      </a>
+      <a href="{% url 'register' %}?type=hospital" class="flex-1 py-3 px-4 rounded-xl font-semibold text-sm text-center transition-all {% if form_type == 'hospital' %}bg-white text-slate-900 shadow-sm{% else %}text-slate-500 hover:text-slate-700{% endif %}">
+        <i class="fas fa-hospital mr-2"></i>Register Hospital
+      </a>
+    </div>
+
+    <!-- Doctor Form -->
+    <div id="doctorForm" class="{% if form_type != 'doctor' %}hidden{% endif %}">
+      <div class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm">
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <input type="hidden" name="form_type" value="doctor">
+
+          <div class="space-y-8">
+            {% for field in doctor_form %}
+            <div>
+              <label for="{{ field.id_for_label }}" class="block text-sm font-semibold text-slate-700 mb-1.5">
+                {{ field.label }}
+                {% if field.field.required %}<span class="text-red-500">*</span>{% endif %}
+              </label>
+              {{ field }}
+              {% if field.help_text %}
+              <p class="text-xs text-slate-400 mt-1">{{ field.help_text }}</p>
+              {% endif %}
+              {% for error in field.errors %}
+              <p class="text-xs text-red-500 mt-1">{{ error }}</p>
+              {% endfor %}
+            </div>
+            {% endfor %}
+          </div>
+
+          <div class="mt-12 text-center">
+            <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-accent to-cyan-600 text-white font-bold rounded-xl hover:shadow-lg hover:shadow-accent/30 transition-all text-base">
+              <i class="fas fa-paper-plane mr-2"></i>Submit Registration
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Hospital Form -->
+    <div id="hospitalForm" class="{% if form_type != 'hospital' %}hidden{% endif %}">
+      <div class="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm">
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <input type="hidden" name="form_type" value="hospital">
+
+          <div class="space-y-8">
+            {% for field in hospital_form %}
+            <div>
+              <label for="{{ field.id_for_label }}" class="block text-sm font-semibold text-slate-700 mb-1.5">
+                {{ field.label }}
+                {% if field.field.required %}<span class="text-red-500">*</span>{% endif %}
+              </label>
+              {{ field }}
+              {% if field.help_text %}
+              <p class="text-xs text-slate-400 mt-1">{{ field.help_text }}</p>
+              {% endif %}
+              {% for error in field.errors %}
+              <p class="text-xs text-red-500 mt-1">{{ error }}</p>
+              {% endfor %}
+            </div>
+            {% endfor %}
+          </div>
+
+          <div class="mt-12 text-center">
+            <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-accent to-cyan-600 text-white font-bold rounded-xl hover:shadow-lg hover:shadow-accent/30 transition-all text-base">
+              <i class="fas fa-paper-plane mr-2"></i>Submit Registration
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Info Box -->
+    <div class="mt-8 bg-amber-50 border border-amber-200 rounded-2xl p-5 text-center">
+      <i class="fas fa-shield-alt text-amber-600 text-xl mb-2"></i>
+      <p class="text-sm text-amber-800 font-medium">Your information will be reviewed by our team before being published. We'll contact you within 24-48 hours for verification.</p>
+    </div>
+  </div>
+</main>
+{% endblock content %}
