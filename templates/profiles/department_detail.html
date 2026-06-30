@@ -25,25 +25,25 @@
 
 {% block content %}
 <main class="flex-grow pt-16">
-  <section class="py-12 bg-bg">
+  <section class="py-12 bg-slate-50">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <nav aria-label="Breadcrumb" class="flex items-center gap-2 text-sm text-muted mb-2">
+      <nav aria-label="Breadcrumb" class="flex items-center gap-2 text-sm text-slate-500 mb-2">
         <a href="{% url 'home' %}" class="hover:text-accent transition-colors">Home</a>
         <i class="fas fa-chevron-right text-xs"></i>
         <a href="{% url 'department_list' %}" class="hover:text-accent transition-colors">Departments</a>
         <i class="fas fa-chevron-right text-xs"></i>
-        <span class="text-fg font-medium">{{ department.name }}</span>
+        <span class="text-slate-900 font-medium">{{ department.name }}</span>
       </nav>
       <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2 mb-6">
         <div>
-          <h1 class="font-display font-bold text-3xl sm:text-4xl text-fg">{{ department.name }}</h1>
-          <p class="text-muted text-lg">{{ total_doctors|intcomma }} doctors found</p>
+          <h1 class="font-display font-bold text-3xl sm:text-4xl text-slate-900">{{ department.name }}</h1>
+          <p class="text-slate-500 text-lg">{{ total_doctors|intcomma }} doctors found</p>
         </div>
       </div>
 
       {% if department.symptoms %}
       <div class="bg-white rounded-2xl p-6 shadow-sm mb-8">
-        <h2 class="font-display font-bold text-xl text-fg mb-3 flex items-center gap-2">
+        <h2 class="font-display font-bold text-xl text-slate-900 mb-3 flex items-center gap-2">
           <i class="fas fa-notes-medical text-accent text-lg"></i>
           Common Symptoms
         </h2>
@@ -55,14 +55,50 @@
       </div>
       {% endif %}
 
+      <!-- Search Form -->
+      <form method="get" class="flex flex-wrap sm:flex-nowrap gap-2 sm:gap-3 mb-6 sm:mb-8 bg-white p-3 sm:p-4 rounded-xl border border-slate-200 items-center">
+        <div class="min-w-[140px] w-full sm:flex-1">
+          <label for="dept-doctor-name" class="sr-only">Search doctor by name</label>
+          <input id="dept-doctor-name" type="text" name="name" value="{{ name_query }}" placeholder="Doctor Name" class="w-full px-3 sm:px-4 py-2.5 rounded-lg bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-accent text-base">
+        </div>
+        <div class="min-w-[140px] w-full sm:flex-1">
+          <label for="dept-location" class="sr-only">Filter by location</label>
+          <select id="dept-location" name="location" class="w-full px-3 sm:px-4 py-2.5 rounded-lg bg-slate-50 border border-slate-200 text-slate-900 appearance-none cursor-pointer focus:outline-none focus:border-accent text-base">
+            <option value="">All Locations</option>
+            {% for loc in locations %}
+              <option value="{{ loc.slug }}" {% if location_slug == loc.slug %}selected{% endif %}>{{ loc.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="min-w-[140px] w-full sm:flex-1">
+          <label for="dept-department" class="sr-only">Change department</label>
+          <select id="dept-department" onchange="if(this.value) window.location.href='/department/' + this.value + '/';" class="w-full px-3 sm:px-4 py-2.5 rounded-lg bg-slate-50 border border-slate-200 text-slate-900 appearance-none cursor-pointer focus:outline-none focus:border-accent text-base">
+            <option value="">Change Department</option>
+            {% for dept in departments %}
+              <option value="{{ dept.slug }}" {% if department.slug == dept.slug %}selected{% endif %}>{{ dept.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="flex gap-2 w-full sm:w-auto">
+          <button type="submit" class="flex-1 sm:flex-none px-4 sm:px-5 py-2.5 bg-accent text-white font-semibold rounded-lg hover:opacity-90 transition-all">
+            Search
+          </button>
+          {% if name_query or location_slug %}
+          <a href="{% url 'department_detail' department.slug %}" class="flex-1 sm:flex-none px-4 sm:px-5 py-2.5 border border-slate-200 text-slate-900 font-semibold rounded-lg hover:bg-gray-50 transition-all text-center text-sm">
+            Clear
+          </a>
+          {% endif %}
+        </div>
+      </form>
+
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {% for doctor in doctors %}
-        <div class="bg-card rounded-2xl overflow-hidden shadow-sm card-hover group flex flex-col">
+        <div class="bg-white rounded-2xl overflow-hidden shadow-sm card-hover group flex flex-col">
           <div class="p-5 flex-1">
             <div class="flex gap-4">
               <img loading="lazy" src="{{ doctor.get_profile_picture_url }}" alt="{{ doctor.name }}" class="w-24 h-24 rounded-2xl object-cover flex-shrink-0 shadow-lg ring-2 ring-white">
               <div class="flex-1 min-w-0">
-                <h2 class="font-display font-semibold text-lg text-fg truncate group-hover:text-accent transition-colors">{{ doctor.name }}</h2>
+                <h2 class="font-display font-semibold text-lg text-slate-900 truncate group-hover:text-accent transition-colors">{{ doctor.name }}</h2>
                 <p class="text-sm text-gray-500 mt-0.5">{{ doctor.designation }}</p>
                 <div class="flex flex-wrap gap-1.5 mt-2">
                   {% for spec in doctor.specialties.all|slice:":2" %}
@@ -70,7 +106,7 @@
                   {% endfor %}
                 </div>
                 {% if doctor.hospital %}
-                <p class="text-muted text-sm mt-2 truncate flex items-center gap-1.5">
+                <p class="text-slate-500 text-sm mt-2 truncate flex items-center gap-1.5">
                   <i class="fas fa-hospital text-xs text-accent"></i>
                   <span class="truncate">{{ doctor.hospital.name }}</span>
                 </p>
@@ -82,8 +118,8 @@
                     <svg class="w-3.5 h-3.5 {% if forloop.counter <= doctor.avg_rating|floatformat:0 %}text-amber-400{% else %}text-slate-300{% endif %}" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
                     {% endfor %}
                   </div>
-                  <span class="text-sm font-semibold text-fg ml-1">{{ doctor.avg_rating|floatformat:1 }}</span>
-                  <span class="text-sm text-muted">({{ doctor.review_count }})</span>
+                  <span class="text-sm font-semibold text-slate-900 ml-1">{{ doctor.avg_rating|floatformat:1 }}</span>
+                  <span class="text-sm text-slate-500">({{ doctor.review_count }})</span>
                 </div>
                 {% endif %}
               </div>
@@ -92,15 +128,15 @@
           <div class="px-5 py-4 bg-slate-50/80">
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-1.5">
-                <i class="fas fa-briefcase text-xs text-muted"></i>
-                <div><p class="text-xs text-muted">Experience</p><p class="font-semibold text-fg text-sm">{{ doctor.experience_years|default:"N/A" }} yrs</p></div>
+                <i class="fas fa-briefcase text-xs text-slate-500"></i>
+                <div><p class="text-xs text-slate-500">Experience</p><p class="font-semibold text-slate-900 text-sm">{{ doctor.experience_years|default:"N/A" }} yrs</p></div>
               </div>
               <div class="flex items-center gap-1.5">
                 <i class="fas fa-map-marker-alt text-xs text-accent"></i>
-                <div class="text-right"><p class="text-xs text-muted">Location</p><p class="font-semibold text-accent text-sm">{{ doctor.location.name|default:"N/A" }}</p></div>
+                <div class="text-right"><p class="text-xs text-slate-500">Location</p><p class="font-semibold text-accent text-sm">{{ doctor.location.name|default:"N/A" }}</p></div>
               </div>
             </div>
-            <a href="{% url 'doctor_profile' doctor.slug %}" class="w-full mt-4 py-3 bg-gradient-to-r from-slate-900 to-slate-700 text-white font-bold rounded-xl border-2 border-slate-600 hover:from-slate-800 hover:to-slate-600 hover:border-slate-500 transition-all shadow-lg shadow-slate-900/20 flex items-center justify-center gap-2 btn-touch text-sm group/btn">
+            <a href="{% url 'doctor_profile' doctor.slug %}" class="w-full mt-4 py-3 bg-gradient-to-r from-slate-900 to-slate-700 text-white font-bold rounded-xl border-2 border-slate-600 hover:from-slate-800 hover:to-slate-600 hover:border-slate-500 transition-all shadow-lg shadow-slate-900/20 flex items-center justify-center gap-2 text-sm group/btn">
               <span>View Profile</span>
               <i class="fas fa-arrow-right text-xs group-hover/btn:translate-x-1 transition-transform"></i>
             </a>
@@ -111,9 +147,9 @@
           <div class="w-20 h-20 mx-auto mb-4 rounded-full bg-slate-100 flex items-center justify-center">
             <i class="fas fa-user-md text-3xl text-slate-400"></i>
           </div>
-          <p class="text-muted text-lg mb-2">No doctors found</p>
-          <p class="text-sm text-slate-400 mb-4">No doctors are currently listed in this department.</p>
-          <a href="{% url 'doctor_list' %}" class="inline-block px-6 py-2.5 bg-accent text-white font-semibold rounded-lg hover:opacity-90 transition-all">Browse All Doctors</a>
+          <p class="text-slate-500 text-lg mb-2">No doctors found</p>
+          <p class="text-sm text-slate-400 mb-4">No doctors match your search criteria in this department.</p>
+          <a href="{% url 'department_detail' department.slug %}" class="inline-block px-6 py-2.5 bg-accent text-white font-semibold rounded-lg hover:opacity-90 transition-all">Clear Filters</a>
         </div>
         {% endfor %}
       </div>
@@ -121,7 +157,7 @@
       {% if page_obj.has_other_pages %}
       <div class="flex items-center justify-center gap-1 mt-12 flex-wrap">
         {% if page_obj.has_previous %}
-          <a href="?page={{ page_obj.previous_page_number }}" class="px-4 py-2 bg-white shadow-sm rounded-lg hover:bg-accent hover:text-slate-900 transition-all text-slate-600 btn-touch text-sm">Prev</a>
+          <a href="?page={{ page_obj.previous_page_number }}{% if name_query %}&name={{ name_query }}{% endif %}{% if location_slug %}&location={{ location_slug }}{% endif %}" class="px-4 py-2 bg-white shadow-sm rounded-lg hover:bg-accent hover:text-slate-900 transition-all text-slate-600 text-sm">Prev</a>
         {% else %}
           <span class="px-4 py-2 bg-slate-100 rounded-lg text-slate-300 cursor-not-allowed text-sm">Prev</span>
         {% endif %}
@@ -131,7 +167,7 @@
             {% if num == page_obj.number %}
               <span class="px-4 py-2 bg-accent text-white rounded-lg font-medium text-sm shadow-sm">{{ num }}</span>
             {% else %}
-              <a href="?page={{ num }}" class="px-4 py-2 bg-white shadow-sm rounded-lg hover:bg-accent hover:text-slate-900 transition-all text-slate-600 btn-touch text-sm">{{ num }}</a>
+              <a href="?page={{ num }}{% if name_query %}&name={{ name_query }}{% endif %}{% if location_slug %}&location={{ location_slug }}{% endif %}" class="px-4 py-2 bg-white shadow-sm rounded-lg hover:bg-accent hover:text-slate-900 transition-all text-slate-600 text-sm">{{ num }}</a>
             {% endif %}
           {% elif num == page_obj.number|add:'-4' or num == page_obj.number|add:'4' %}
             <span class="px-2 py-2 text-slate-400 text-sm">...</span>
@@ -139,7 +175,7 @@
         {% endfor %}
 
         {% if page_obj.has_next %}
-          <a href="?page={{ page_obj.next_page_number }}" class="px-4 py-2 bg-white shadow-sm rounded-lg hover:bg-accent hover:text-slate-900 transition-all text-slate-600 btn-touch text-sm">Next</a>
+          <a href="?page={{ page_obj.next_page_number }}{% if name_query %}&name={{ name_query }}{% endif %}{% if location_slug %}&location={{ location_slug }}{% endif %}" class="px-4 py-2 bg-white shadow-sm rounded-lg hover:bg-accent hover:text-slate-900 transition-all text-slate-600 text-sm">Next</a>
         {% else %}
           <span class="px-4 py-2 bg-slate-100 rounded-lg text-slate-300 cursor-not-allowed text-sm">Next</span>
         {% endif %}
@@ -147,7 +183,7 @@
       {% endif %}
 
       <div class="mt-16 max-w-4xl mx-auto">
-        <h2 class="font-display font-bold text-2xl text-fg mb-6 flex items-center gap-3">
+        <h2 class="font-display font-bold text-2xl text-slate-900 mb-6 flex items-center gap-3">
           <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-accent to-cyan-600 flex items-center justify-center text-white">
             <i class="fas fa-question-circle"></i>
           </div>
@@ -160,10 +196,10 @@
               <div class="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center text-accent flex-shrink-0">
                 <i class="fas fa-info-circle"></i>
               </div>
-              <span class="font-medium text-fg">What is {{ department.name }}?</span>
+              <span class="font-medium text-slate-900">What is {{ department.name }}?</span>
               <i class="fas fa-chevron-down ml-auto text-slate-400 group-open:rotate-180 transition-transform"></i>
             </summary>
-            <div class="px-4 pb-4 pl-16 text-muted leading-relaxed">
+            <div class="px-4 pb-4 pl-16 text-slate-500 leading-relaxed">
               {{ department.name }} is a medical department that deals with the diagnosis, treatment, and management of conditions related to this specialty area. Doctors in this department have specialized training and expertise to provide comprehensive care for patients.
             </div>
           </details>
@@ -173,13 +209,13 @@
               <div class="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center text-accent flex-shrink-0">
                 <i class="fas fa-notes-medical"></i>
               </div>
-              <span class="font-medium text-fg">What symptoms should I look for?</span>
+              <span class="font-medium text-slate-900">What symptoms should I look for?</span>
               <i class="fas fa-chevron-down ml-auto text-slate-400 group-open:rotate-180 transition-transform"></i>
             </summary>
-            <div class="px-4 pb-4 pl-16 text-muted leading-relaxed">
+            <div class="px-4 pb-4 pl-16 text-slate-500 leading-relaxed">
               Common symptoms associated with {{ department.name }} include:
               {% if department.get_symptoms_list %}
-              <span class="font-medium text-fg">{{ department.get_symptoms_list|join:", " }}</span>.
+              <span class="font-medium text-slate-900">{{ department.get_symptoms_list|join:", " }}</span>.
               {% endif %}
               If you are experiencing any of these symptoms, consider consulting a specialist in this department.
             </div>
@@ -190,10 +226,10 @@
               <div class="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center text-accent flex-shrink-0">
                 <i class="fas fa-user-md"></i>
               </div>
-              <span class="font-medium text-fg">How do I find the right doctor in {{ department.name }}?</span>
+              <span class="font-medium text-slate-900">How do I find the right doctor in {{ department.name }}?</span>
               <i class="fas fa-chevron-down ml-auto text-slate-400 group-open:rotate-180 transition-transform"></i>
             </summary>
-            <div class="px-4 pb-4 pl-16 text-muted leading-relaxed">
+            <div class="px-4 pb-4 pl-16 text-slate-500 leading-relaxed">
               Browse the list of doctors above to find specialists in {{ department.name }}. You can filter by location, check their qualifications, experience, and patient reviews to choose the right doctor for your needs. Each doctor's profile includes their chamber details and contact information for booking appointments.
             </div>
           </details>
@@ -203,10 +239,10 @@
               <div class="w-8 h-8 rounded-lg bg-accent/10 flex items-center justify-center text-accent flex-shrink-0">
                 <i class="fas fa-building"></i>
               </div>
-              <span class="font-medium text-fg">What specialties are part of {{ department.name }}?</span>
+              <span class="font-medium text-slate-900">What specialties are part of {{ department.name }}?</span>
               <i class="fas fa-chevron-down ml-auto text-slate-400 group-open:rotate-180 transition-transform"></i>
             </summary>
-            <div class="px-4 pb-4 pl-16 text-muted leading-relaxed">
+            <div class="px-4 pb-4 pl-16 text-slate-500 leading-relaxed">
               {% if specialties %}
               {{ department.name }} includes specialties such as {% for spec in specialties %}{{ spec.name }}{% if not forloop.last %}, {% endif %}{% endfor %}. Each specialty focuses on specific conditions and treatments within the department.
               {% else %}
@@ -219,7 +255,7 @@
 
       <div class="mt-16 text-center">
         <div class="flex flex-wrap justify-center gap-3">
-          <a href="{% url 'department_list' %}" class="px-5 py-2.5 bg-white shadow-sm text-fg font-semibold rounded-lg hover:bg-gray-50 transition-all text-sm">All Departments</a>
+          <a href="{% url 'department_list' %}" class="px-5 py-2.5 bg-white shadow-sm text-slate-900 font-semibold rounded-lg hover:bg-gray-50 transition-all text-sm">All Departments</a>
           <a href="{% url 'doctor_list' %}" class="px-5 py-2.5 bg-accent text-white font-semibold rounded-lg hover:opacity-90 transition-all text-sm">Browse All Doctors</a>
         </div>
       </div>

@@ -928,21 +928,39 @@ def department_list_view(request):
 
 def department_detail_view(request, slug):
     department = get_object_or_404(Department, slug=slug)
+
+    name_query = request.GET.get('name', '')
+    location_slug = request.GET.get('location', '')
+
     doctors_qs = Doctor.objects.filter(specialties__department=department).select_related(
         'hospital', 'location'
     ).prefetch_related('specialties').annotate(
         avg_rating=Avg('reviews__rating'), review_count=Count('reviews')
     ).distinct().order_by('-avg_rating')
 
+    if name_query:
+        doctors_qs = doctors_qs.filter(name__icontains=name_query)
+    if location_slug:
+        doctors_qs = doctors_qs.filter(location__slug=location_slug)
+
     paginator = Paginator(doctors_qs, 12)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
+
+    departments = list(Department.objects.annotate(
+        doctor_count=Count('specialties__doctor', distinct=True)
+    ).filter(doctor_count__gt=0).order_by('name'))
+    locations = list(Location.objects.all().order_by('name'))
 
     context = {
         'department': department,
         'page_obj': page_obj,
         'doctors': page_obj.object_list,
         'total_doctors': paginator.count,
+        'name_query': name_query,
+        'location_slug': location_slug,
+        'departments': departments,
+        'locations': locations,
     }
     return render(request, 'profiles/department_detail.html', context)
 
