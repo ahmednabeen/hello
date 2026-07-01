@@ -389,13 +389,13 @@
       <div
         class="flex flex-col sm:flex-row justify-between items-center mb-4 gap-4"
       >
-        <h2 class="font-display font-bold text-2xl text-slate-900">
-          {{ hospital.name }} Doctors List, Specialties & Appointment Info
+        <h2 class="font-display font-bold text-xl sm:text-2xl text-slate-900">
+          {{ hospital.name }} Doctors List
         </h2>
       </div>
 
       <!-- Filter Buttons -->
-<div class="bg-white p-3 sm:p-4 rounded-xl border border-border shadow-sm overflow-x-auto">
+<div class="bg-white p-2 sm:p-4 rounded-xl border border-border shadow-sm overflow-x-auto">
   <div class="flex flex-nowrap gap-2 min-w-max sm:flex-wrap">
 
     <!-- ✅ ALL button -->
@@ -439,11 +439,11 @@
           Showing
           <span class="font-bold text-fg">{{ total_doctors }}</span> Doctors
         </p>
-<div class="flex items-center gap-2">
-       <label for="sort-select" class="text-sm text-muted">Sort by:</label>
+<div class="flex items-center gap-1.5">
+       <label for="sort-select" class="text-xs sm:text-sm text-muted whitespace-nowrap">Sort:</label>
 
   <select id="sort-select"
-    class="text-sm border-none bg-transparent font-semibold text-fg focus:ring-2 focus:ring-primary rounded cursor-pointer"
+    class="text-xs sm:text-sm border-none bg-transparent font-semibold text-fg focus:ring-2 focus:ring-primary rounded cursor-pointer py-2"
     aria-label="Sort doctors">
 
     <option value="">Default</option>

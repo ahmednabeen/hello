@@ -464,34 +464,36 @@ def register_view(request):
         if form_type == 'doctor':
             doctor_form = DoctorRegistrationForm(request.POST, request.FILES)
             if doctor_form.is_valid():
-                doctor = doctor_form.save(commit=False)
-                from .models import Location, Hospital as HospitalModel, Specialty
-                location_name = doctor_form.cleaned_data.get('location_text', '')
-                if location_name:
-                    location, _ = Location.objects.get_or_create(name=location_name.strip())
-                    doctor.location = location
-                hospital_name = doctor_form.cleaned_data.get('hospital_text', '')
-                if hospital_name:
-                    hospital, _ = HospitalModel.objects.get_or_create(name=hospital_name.strip())
-                    doctor.hospital = hospital
-                doctor.save()
-                specialties_text = doctor_form.cleaned_data.get('specialties_text', '')
-                if specialties_text:
-                    names = [s.strip() for s in specialties_text.split(',') if s.strip()]
-                    for name in names:
-                        specialty, _ = Specialty.objects.get_or_create(name=name)
-                        doctor.specialties.add(specialty)
+                from .pending_models import PendingDoctor as PendingDoctorModel
+                pending = PendingDoctorModel(
+                    name=doctor_form.cleaned_data['name'],
+                    designation=doctor_form.cleaned_data['designation'],
+                    qualifications=doctor_form.cleaned_data['qualifications'],
+                    experience_years=doctor_form.cleaned_data.get('experience_years'),
+                    about=doctor_form.cleaned_data.get('about', ''),
+                    location_text=doctor_form.cleaned_data.get('location_text', ''),
+                    hospital_text=doctor_form.cleaned_data.get('hospital_text', ''),
+                    specialties_text=doctor_form.cleaned_data.get('specialties_text', ''),
+                )
+                if 'profile_picture' in request.FILES:
+                    pending.profile_picture = request.FILES['profile_picture']
+                pending.save()
                 return redirect('register_thanks')
         else:
             hospital_form = HospitalRegistrationForm(request.POST, request.FILES)
             if hospital_form.is_valid():
-                hospital = hospital_form.save(commit=False)
-                from .models import Location
-                location_name = hospital_form.cleaned_data.get('location_text', '')
-                if location_name:
-                    location, _ = Location.objects.get_or_create(name=location_name.strip())
-                    hospital.location = location
-                hospital.save()
+                from .pending_models import PendingHospital as PendingHospitalModel
+                pending = PendingHospitalModel(
+                    name=hospital_form.cleaned_data['name'],
+                    address=hospital_form.cleaned_data.get('address', ''),
+                    contact_numbers=hospital_form.cleaned_data.get('contact_numbers', ''),
+                    facilities=hospital_form.cleaned_data.get('facilities', ''),
+                    about=hospital_form.cleaned_data.get('about', ''),
+                    location_text=hospital_form.cleaned_data.get('location_text', ''),
+                )
+                if 'image' in request.FILES:
+                    pending.image = request.FILES['image']
+                pending.save()
                 return redirect('register_thanks')
 
     context = {

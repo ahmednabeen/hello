@@ -222,6 +222,31 @@
     </div>
   </footer>
 
+  <!-- Mobile Responsive Styles -->
+  <style>
+    /* Touch targets - minimum 44px */
+    .btn-touch { min-height: 44px; min-width: 44px; touch-action: manipulation; }
+    * { -webkit-tap-highlight-color: transparent; }
+
+    /* Prevent overflow on very small screens */
+    .mobile-container { padding-left: 0.75rem; padding-right: 0.75rem; }
+
+    /* Safe area for notch phones */
+    .safe-padding { padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); }
+
+    /* Better readability on small screens */
+    @media (max-width: 380px) {
+      .hero-title { font-size: 1.75rem !important; line-height: 1.2 !important; }
+      .hero-subtitle { font-size: 1rem !important; }
+    }
+
+    /* Responsive tables */
+    @media (max-width: 640px) {
+      .filter-bar { flex-direction: column !important; }
+      .filter-bar > * { width: 100% !important; }
+    }
+  </style>
+
   <!-- JavaScript Logic -->
   <script>
     // Mobile Menu Toggle
